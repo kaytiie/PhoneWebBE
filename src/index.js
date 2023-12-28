@@ -121,14 +121,14 @@ io.on("connection", async function (socket) {
     });
     //========================================================    
     // LOGIN
-    // socket.on("login", function () {
-    //     // Xử lý thông tin đăng nhập ở đây, ví dụ kiểm tra thông tin đăng nhập
-    //     const { email } = data;                                                             // tưƠng tự như email = data.email
-    //     // Nếu đăng nhập thành công, có thể thực hiện các hành động cần thiết
-    //     console.log(`${email} logged in successfully`);
-    //     // Gửi thông báo đăng nhập thành công về cho client
-    //     socket.emit("login_success", "Login successfully");
-    // });
+    socket.on("login", function () {
+        // Xử lý thông tin đăng nhập ở đây, ví dụ kiểm tra thông tin đăng nhập
+        // const { email } = data;                                                             // tưƠng tự như email = data.email
+        // Nếu đăng nhập thành công, có thể thực hiện các hành động cần thiết
+        console.log(`${email} logged in successfully`);
+        // Gửi thông báo đăng nhập thành công về cho client
+        socket.emit("login_success", "Login successfully");
+    });
     //========================================================   
     //LOGOUT
     socket.on("logout", function (data) {
