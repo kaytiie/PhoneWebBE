@@ -91,9 +91,8 @@ const forgotPassword = async (email) => {
   
       const resetToken = await generateRandomToken(32);
   
-      // Lưu trữ mã thông báo và thời hạn của nó trong tài khoản người dùng
       user.resetToken = resetToken;
-      user.resetTokenExpires = new Date(Date.now() + 30); // Hết hạn trong 1 giờ
+      user.resetTokenExpires = new Date(Date.now() + 60); 
       await user.save();
   
       const resetPasswordLink = `${process.env.YOUR_CLIENT_URL}/reset-password/${resetToken}`;
@@ -101,19 +100,20 @@ const forgotPassword = async (email) => {
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-          user: process.env.MAIL_ACCOUNT, // generated ethereal user
-          pass: process.env.MAIL_PASSWORD, // generated ethereal password
+          user: process.env.MAIL_ACCOUNT,
+          pass: process.env.MAIL_PASSWORD, 
         },
       });
   
       const mailOptions = {
-        from: process.env.MAIL_ACCOUNT, // Địa chỉ email của bạn
+        from: process.env.MAIL_ACCOUNT, 
         to: user.email,
         subject: "Khôi phục mật khẩu",
         text: `Mã khôi phục mật khẩu của bạn là: ${resetToken}`,
         html: `
           <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
-          <p>Vui lòng nhấp vào liên kết dưới đây để đặt lại mật khẩu:</p>
+          <p>Vui lòng nhấp vào liên kết dưới đây để đặt lại mật khẩu. 
+          Lưu ý, liên kết chỉ có hiệu lực trong vòng 1 phút kể từ thời điểm bạn nhận được!</p>
           <a href="${resetPasswordLink}">${resetPasswordLink}</a>
         `,
       };
@@ -126,30 +126,31 @@ const forgotPassword = async (email) => {
       throw error;
     }
   };
+
   
-const resetPassword = async (resetToken, password) => {
-try {
-    const user = await User.findOne({
+  const resetPassword = async (resetToken, password) => {
+    try {
+      const user = await User.findOne({
         resetToken,
-        resetTokenExpires: { $gt: Date.now() }, // Thay đổi này để đảm bảo token chưa hết hạn
-    });
-
-    if (!user) {
+        // resetTokenExpiration: { $gt: Date.now() },
+        
+      });
+      console.log('user', user)
+      if (!user) {
         return { status: "ERR", message: "Invalid or expired reset token." };
+      }
+  
+      user.password = bcrypt.hashSync(password, 10);
+      user.resetToken = undefined;
+      user.resetTokenExpiration = undefined;
+      await user.save();
+  
+      return { status: "OK", message: "Password reset successfully." };
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      throw error;
     }
-
-    // Reset mật khẩu
-    user.password = bcrypt.hashSync(password, 10); // Sử dụng số vòng lặp lớn hơn
-    user.resetToken = undefined;
-    user.resetTokenExpires = undefined;
-    await user.save();
-
-    return { status: "OK", message: "Password reset successfully." };
-} catch (error) {
-    console.error("Error resetting password:", error);
-    throw error;
-}
-};
+  };
 
 
 const updateUser = (id, data) => {

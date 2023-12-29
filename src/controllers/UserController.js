@@ -75,7 +75,6 @@ const forgotPassword = async (req, res) => {
         });
       }
   
-      // Gọi hàm UserService để khởi tạo quá trình khôi phục mật khẩu
       await UserService.forgotPassword(email);
   
       return res.status(200).json({
@@ -90,22 +89,21 @@ const forgotPassword = async (req, res) => {
     }
   };
   
-const resetPassword = async (req, res) => {
-try {
-    const { resetToken, password } = req.body;
-
-    const response = await UserService.resetPassword(resetToken, password);
-    
-    if (response.status === "OK") {
-    return res.json({ status: "OK", message: "Password reset successfully." });
-    } else {
-    return res.status(400).json(response);
+  const resetPassword = async (req, res) => {
+    try {
+      const { resetToken, password } = req.body;
+  
+      const response = await UserService.resetPassword(resetToken, password);
+      if (response.status === "OK") {
+        return res.json({ status: "OK", message: "Password reset successfully." });
+      } else {
+        return res.status(400).json(response);
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      return res.status(500).json({ status: "ERR", message: "Internal server error." });
     }
-} catch (error) {
-    console.error("Error resetting password:", error);
-    return res.status(500).json({ status: "ERR", message: "Internal server error." });
-}
-};
+  };
 
 const updateUser = async (req, res) => {
     try {
