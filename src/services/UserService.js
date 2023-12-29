@@ -92,7 +92,7 @@ const forgotPassword = async (email) => {
       const resetToken = await generateRandomToken(32);
   
       user.resetToken = resetToken;
-      user.resetTokenExpires = new Date(Date.now() + 60); 
+      user.resetTokenExpires = new Date(Date.now() + 60*1000); 
       await user.save();
   
       const resetPasswordLink = `${process.env.YOUR_CLIENT_URL}/reset-password/${resetToken}`;
@@ -132,7 +132,7 @@ const forgotPassword = async (email) => {
     try {
       const user = await User.findOne({
         resetToken,
-        // resetTokenExpiration: { $gt: Date.now() },
+        resetTokenExpires: { $gt: Date.now() },
         
       });
       console.log('user', user)
@@ -142,7 +142,7 @@ const forgotPassword = async (email) => {
   
       user.password = bcrypt.hashSync(password, 10);
       user.resetToken = undefined;
-      user.resetTokenExpiration = undefined;
+      user.resetTokenExpires = undefined;
       await user.save();
   
       return { status: "OK", message: "Password reset successfully." };
