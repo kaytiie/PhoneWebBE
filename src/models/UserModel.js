@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema(
         phone: { type: Number },
         address: { type: String },
         avatar: { type: String },
-        city: {type: String}
+        city: {type: String},
+        resetToken: { type: String }, 
+        resetTokenExpires: { type: Date },
     },
     {
         timestamps: true
