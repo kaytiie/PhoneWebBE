@@ -17,7 +17,10 @@ const AccessLog = require('./models/AccessLog.js');
 
 dotenv.config()
 mongoose.set('strictQuery', false);
-
+app.use(cors({
+    origin: '*',
+    credentials: true,
+}));
 const app = express()
 const httpServer = createServer(app);
 const io = new Server(httpServer);
@@ -28,12 +31,7 @@ let connectedUsers = 0; // Biến đếm số người đang kết nối
 
 
 const port = process.env.PORT || 3001
-app.use(cors({
-    origin: true,
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-}));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.json({ limit: '50mb' }));
