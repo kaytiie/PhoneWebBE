@@ -21,7 +21,7 @@ mongoose.set('strictQuery', false);
 const app = express()
 const httpServer = createServer(app);
 app.use(cors({
-    origin: '*',
+    origin: true,
     credentials: true,
 }));
 const io = new Server(httpServer);
