@@ -10,7 +10,6 @@ const cookieParser = require('cookie-parser')
 const Review = require('./models/Comment')
 const { createServer } = require("http");
 const { Server } = require("socket.io");
-
 const News = require("./models/News");
 const AccessLog = require('./models/AccessLog.js');
 
@@ -21,7 +20,6 @@ mongoose.set('strictQuery', false);
 
 const app = express()
 const httpServer = createServer(app);
-
 const io = new Server(httpServer);
 // const server = require('http').createServer(app);  // Tạo một server HTTP
 // const io = require('socket.io')(server);  // Kết nối Socket.io với server
@@ -30,12 +28,7 @@ let connectedUsers = 0; // Biến đếm số người đang kết nối
 
 
 const port = process.env.PORT || 3001
-app.use(cors({
-    origin: 'https://shopdientu.vercel.app',
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-}));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.json({ limit: '50mb' }));
