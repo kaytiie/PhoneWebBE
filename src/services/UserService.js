@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
 const { use } = require("../routes/UserRouter");
 const nodemailer = require('nodemailer')
-const  {generateRandomToken}  = require('../token/generateRandomToken')
+const { generateRandomToken } = require('../token/generateRandomToken')
 
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
@@ -83,74 +83,75 @@ const loginUser = (userLogin) => {
 
 const forgotPassword = async (email) => {
     try {
-      const user = await User.findOne({ email });
-  
-      if (!user) {
-        throw new Error("Người dùng với địa chỉ email này không tồn tại.");
-      }
-  
-      const resetToken = await generateRandomToken(32);
-  
-      user.resetToken = resetToken;
-      user.resetTokenExpires = new Date(Date.now() + 60*1000); 
-      await user.save();
-  
-      const resetPasswordLink = `${process.env.YOUR_CLIENT_URL}/reset-password/${resetToken}`;
-  
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.MAIL_ACCOUNT,
-          pass: process.env.MAIL_PASSWORD, 
-        },
-      });
-  
-      const mailOptions = {
-        from: process.env.MAIL_ACCOUNT, 
-        to: user.email,
-        subject: "Khôi phục mật khẩu",
-        text: `Mã khôi phục mật khẩu của bạn là: ${resetToken}`,
-        html: `
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            throw new Error("Người dùng với địa chỉ email này không tồn tại.");
+        }
+
+        const resetToken = await generateRandomToken(32);
+
+        // Lưu trữ mã thông báo và thời hạn của nó trong tài khoản người dùng
+        user.resetToken = resetToken;
+        user.resetTokenExpires = new Date(Date.now() + 60 * 1000);
+        await user.save();
+
+        const resetPasswordLink = `${process.env.YOUR_CLIENT_URL}/reset-password/${resetToken}`;
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.MAIL_ACCOUNT,
+                pass: process.env.MAIL_PASSWORD,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.MAIL_ACCOUNT,
+            to: user.email,
+            subject: "Khôi phục mật khẩu",
+            text: `Mã khôi phục mật khẩu của bạn là: ${resetToken}`,
+            html: `
           <p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
           <p>Vui lòng nhấp vào liên kết dưới đây để đặt lại mật khẩu. 
           Lưu ý, liên kết chỉ có hiệu lực trong vòng 1 phút kể từ thời điểm bạn nhận được!</p>
           <a href="${resetPasswordLink}">${resetPasswordLink}</a>
         `,
-      };
-  
-      await transporter.sendMail(mailOptions);
-  
-      return { status: "OK", message: "Email khôi phục mật khẩu đã được gửi thành công." };
-    } catch (error) {
-      console.error("Error in forgotPassword:", error);
-      throw error;
-    }
-  };
+        };
 
-  
-  const resetPassword = async (resetToken, password) => {
-    try {
-      const user = await User.findOne({
-        resetToken,
-        resetTokenExpires: { $gt: Date.now() },
-        
-      });
-      console.log('user', user)
-      if (!user) {
-        return { status: "ERR", message: "Invalid or expired reset token." };
-      }
-  
-      user.password = bcrypt.hashSync(password, 10);
-      user.resetToken = undefined;
-      user.resetTokenExpires = undefined;
-      await user.save();
-  
-      return { status: "OK", message: "Password reset successfully." };
+        await transporter.sendMail(mailOptions);
+
+        return { status: "OK", message: "Email khôi phục mật khẩu đã được gửi thành công." };
     } catch (error) {
-      console.error("Error resetting password:", error);
-      throw error;
+        console.error("Error in forgotPassword:", error);
+        throw error;
     }
-  };
+};
+
+
+const resetPassword = async (resetToken, password) => {
+    try {
+        const user = await User.findOne({
+            resetToken,
+            resetTokenExpires: { $gt: Date.now() },
+
+        });
+        console.log('user', user)
+        if (!user) {
+            return { status: "ERR", message: "Invalid or expired reset token." };
+        }
+
+        user.password = bcrypt.hashSync(password, 10);
+        user.resetToken = undefined;
+        user.resetTokenExpires = undefined;
+        await user.save();
+
+        return { status: "OK", message: "Password reset successfully." };
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        throw error;
+    }
+};
 
 
 const updateUser = (id, data) => {
@@ -220,7 +221,7 @@ const deleteManyUser = (ids) => {
 const getAllUser = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const allUser = await User.find().sort({createdAt: -1, updatedAt: -1})
+            const allUser = await User.find().sort({ createdAt: -1, updatedAt: -1 })
             resolve({
                 status: 'OK',
                 message: 'Success',
