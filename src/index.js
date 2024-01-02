@@ -17,12 +17,13 @@ const AccessLog = require('./models/AccessLog.js');
 
 dotenv.config()
 mongoose.set('strictQuery', false);
+
+const app = express()
+const httpServer = createServer(app);
 app.use(cors({
     origin: '*',
     credentials: true,
 }));
-const app = express()
-const httpServer = createServer(app);
 const io = new Server(httpServer);
 // const server = require('http').createServer(app);  // Tạo một server HTTP
 // const io = require('socket.io')(server);  // Kết nối Socket.io với server
