@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 //socket
 const Review = require('./models/Comment')
-const { createServer } = require("http");
+const { createServer } = require("https");
 const { Server } = require("socket.io");
 const News = require("./models/News");
 const AccessLog = require('./models/AccessLog.js');
