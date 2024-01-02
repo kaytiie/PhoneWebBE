@@ -22,12 +22,7 @@ mongoose.set('strictQuery', false);
 const app = express()
 const httpServer = createServer(app);
 
-const io = new Server(httpServer, {
-    cors: {
-        origin: "https://shopdientu.vercel.app/",
-        methods: ["GET", "POST"]
-    }
-});
+const io = new Server(httpServer);
 // const server = require('http').createServer(app);  // Tạo một server HTTP
 // const io = require('socket.io')(server);  // Kết nối Socket.io với server
 let connectedUsers = 0; // Biến đếm số người đang kết nối
@@ -36,7 +31,7 @@ let connectedUsers = 0; // Biến đếm số người đang kết nối
 
 const port = process.env.PORT || 3001
 app.use(cors({
-    origin: true,
+    origin: 'https://shopdientu.vercel.app',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
